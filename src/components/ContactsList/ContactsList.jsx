@@ -1,71 +1,61 @@
 import { ButtonWrapper, DeleteButton, Item, List } from './ContactsList.styled';
 import { FaTrashAlt } from 'react-icons/fa';
-import { Component } from 'react';
+import { useState } from 'react';
 
-class ContactsList extends Component {
-  state = {
-    contactsToDelete: [],
-  };
+export default function ContactsList({ contacts, filter, deleteContacts }) {
+  const [contactsToDelete, setContactsToDelete] = useState([]);
 
-  handleCheckboxStatus = selectedContact => {
-    this.setState({
-      contactsToDelete: this.state.contactsToDelete.includes(selectedContact)
-        ? this.state.contactsToDelete.filter(
-            contact => contact !== selectedContact
-          )
-        : [...this.state.contactsToDelete, selectedContact],
-    });
-  };
-
-  reset = () => this.setState({ contactsToDelete: [] });
-
-  render() {
-    return (
-      <>
-        <List>
-          {this.props.contacts
-            .filter(
-              contact =>
-                this.props.filter === '' ||
-                contact.name
-                  .toLowerCase()
-                  .includes(this.props.filter.toLowerCase())
-            )
-            .map(contact => (
-              <label key={contact.id}>
-                <Item>
-                  <input
-                    type="checkbox"
-                    name="contactToDelete"
-                    checked={this.state.contactsToDelete.includes(contact)}
-                    onChange={() => this.handleCheckboxStatus(contact)}
-                  />
-                  <p>{`${contact.name}: ${contact.number} ${
-                    contact.type ? `*${contact.type}*` : ''
-                  }`}</p>
-                </Item>
-              </label>
-            ))}
-        </List>
-
-        <ButtonWrapper>
-          <DeleteButton
-            type="button"
-            onClick={() => {
-              if (this.state.contactsToDelete.length === 0)
-                alert('Choose contact(s) to delete');
-              else {
-                this.props.deleteContacts(this.state.contactsToDelete);
-                this.reset();
-              }
-            }}
-          >
-            <FaTrashAlt className="icon" />
-          </DeleteButton>
-        </ButtonWrapper>
-      </>
+  const handleCheckboxStatus = selectedContact => {
+    setContactsToDelete(
+      contactsToDelete.includes(selectedContact)
+        ? contactsToDelete.filter(contact => contact !== selectedContact)
+        : [...contactsToDelete, selectedContact]
     );
-  }
-}
+  };
 
-export default ContactsList;
+  const reset = () => setContactsToDelete([]);
+
+  return (
+    <>
+      <List>
+        {contacts
+          .filter(
+            contact =>
+              filter === '' ||
+              contact.name.toLowerCase().includes(filter.toLowerCase())
+          )
+          .map(contact => (
+            <label key={contact.id}>
+              <Item>
+                <input
+                  type="checkbox"
+                  name="contactToDelete"
+                  checked={contactsToDelete.includes(contact)}
+                  onChange={() => handleCheckboxStatus(contact)}
+                />
+                <p>{`${contact.name}: ${contact.number} ${
+                  contact.type ? `*${contact.type}*` : ''
+                }`}</p>
+              </Item>
+            </label>
+          ))}
+      </List>
+
+      <ButtonWrapper>
+        <DeleteButton
+          type="button"
+          onClick={() => {
+            if (contactsToDelete.length === 0)
+              alert('Choose contact(s) to delete');
+            else {
+              deleteContacts(contactsToDelete);
+              reset();
+            }
+          }}
+        >
+          <FaTrashAlt className="icon" />
+        </DeleteButton>
+      </ButtonWrapper>
+    </>
+  );
+}

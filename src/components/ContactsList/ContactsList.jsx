@@ -22,7 +22,7 @@ export default function ContactsList({ contacts, filter, deleteContacts }) {
           .filter(
             contact =>
               filter === '' ||
-              contact.name.toLowerCase().includes(filter.toLowerCase())
+              contact.name.toLowerCase().includes(filter.toLowerCase().trim())
           )
           .map(contact => (
             <label key={contact.id}>
